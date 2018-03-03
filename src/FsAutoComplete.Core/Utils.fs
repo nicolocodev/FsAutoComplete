@@ -36,6 +36,21 @@ type SourceFilePath = string
 type FilePath = string
 type LineStr = string
 
+module FsdnTypes =   
+   type Query = string
+   type Response = { values : Value list }
+   and Value = { api : Api }
+   and Api = {
+      name : Name
+      kind : string
+      signature : Signature list
+      type_constraints : string
+      assembly : string
+      xml_doc : string
+      link : string
+   }
+   and Name = { id : string; class_name : string; _namespace : string }
+   and Signature = { name : string }
 let isAScript fileName =
     let ext = Path.GetExtension fileName
     [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)

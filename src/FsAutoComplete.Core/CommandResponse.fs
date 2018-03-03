@@ -569,7 +569,10 @@ module CommandResponse =
 
     serialize { Kind = "lint"; Data = data }
 
+  let fsdn (serialize : Serializer) (results : string list) =
+    let data = results |> List.toArray
 
+    serialize { Kind = "fsdn"; Data = data }
   let resolveNamespace (serialize : Serializer) (word: string, opens : (string * string * InsertContext * bool) list, qualfies : (string * string) list) =
     let ops =
       opens

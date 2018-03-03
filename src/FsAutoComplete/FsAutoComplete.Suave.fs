@@ -206,6 +206,7 @@ let start (commands: Commands) (args: ParseResults<Options.CLIArguments>) =
                     cts.CancelAfter(System.TimeSpan.FromSeconds(1.0))
                     return! commands.Quit()
                 })
+            path "/fsdn" >=> handler (fun (data: FsdnRequest) -> commands.Fsdn data.Data)
         ]
 
     let port = args.GetResult (<@ Options.CLIArguments.Port @>, defaultValue = 8088)

@@ -9,7 +9,8 @@ open System.Threading
 open Utils
 open System.Reflection
 open Microsoft.FSharp.Compiler.Range
-
+open System.Net.Http
+open Newtonsoft.Json
 
 
 module Response = CommandResponse
@@ -451,6 +452,30 @@ type Commands (serialize : Serializer) =
         tyRes.TryGetMethodOverrides lines pos
         |> x.SerializeResult (Response.methods, Response.error)
         |> x.AsCancellable (Path.GetFullPath tyRes.FileName)
+
+    member x.Fsdn (query : FsdnTypes.Query) = 
+
+       let prettify (v:FsdnTypes.Value) =
+          v.api.name.class_name + "." + v.api.name.id + " : " 
+          + String.Join("", (v.api.signature |> List.map(fun s -> s.name)))
+
+       async {           
+           let queryString = "query=" + query + "&exclusion=Argu+ExtCore+FAKE.Lib+FParsec+FSharp.Collections.ParallelSeq+FSharp.Compiler.Service+FSharp.Control.AsyncSeq+FSharp.Control.Reactive+FSharp.Data+FSharp.ViewModule.Core+FsPickler+FsUnit+Newtonsoft.Json+Suave+Suave.Experimental+System.Reactive.Core+System.Reactive.Interfaces+System.Reactive.Linq&respect_name_difference=enabled&greedy_matching=disabled&ignore_parameter_style=enabled&ignore_case=enabled&substring=enabled&swap_order=enabled&complement=enabled&single_letter_as_variable=enabled&language=fsharp&limit=20"
+
+           let getUrl = "http://fsdn.azurewebsites.net/api/search?" + queryString           
+
+           try
+              // todo: reuse instance?
+              use httpClient = new HttpClient()
+
+              let! json = httpClient.GetStringAsync(getUrl) |> Async.AwaitTask 
+
+              let res = JsonConvert.DeserializeObject<FsdnTypes.Response>(json)
+
+              return  [ Response.fsdn serialize (res.values |> List.map prettify) ]
+            with _ex ->
+               return [ Response.info serialize "Something went wrong during fsdn query" ]
+       }
 
     member x.Lint (file: SourceFilePath) =
 

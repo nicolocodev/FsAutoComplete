@@ -10,3 +10,4 @@ type FileRequest = {FileName : string}
 type WorkspacePeekRequest = {Directory : string; Deep: int; ExcludedDirs: string array}
 type WorkspaceLoadRequest = {Files : string array}
 type QuitRequest() = class end
+type FsdnRequest = {Data : string}
