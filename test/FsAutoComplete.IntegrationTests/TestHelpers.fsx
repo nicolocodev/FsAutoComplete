@@ -126,6 +126,9 @@ type FsAutoCompleteWrapperStdio() =
   member x.lint (fn: string) : unit =
     fprintf p.StandardInput "lint \"%s\"\n" fn
 
+  member x.fsdn (fn: string) : unit =
+    fprintf p.StandardInput "fsdn \"%s\"\n" fn
+
   member x.send (s: string) : unit =
     fprintf p.StandardInput "%s" s
 
@@ -342,6 +345,10 @@ type FsAutoCompleteWrapperHttp() =
   member x.lint (fn: string) : unit =
     { FileRequest.FileName = absPath fn }
     |> recordRequest "lint" (makeRequestId())
+
+  member x.fsdn (s: string) : unit =
+    { Data = s }
+    |> recordRequest "fsdn" (makeRequestId())
 
   member x.send (s: string) : unit =
     if s.Contains("quit") then

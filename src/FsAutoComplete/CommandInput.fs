@@ -36,6 +36,7 @@ type Command =
   | CompilerLocation
   | WorkspacePeek of string * int * string[]
   | WorkspaceLoad of string[]
+  | Fsdn of string
   | Started
   | Quit
 
